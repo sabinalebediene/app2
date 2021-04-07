@@ -62,6 +62,7 @@ class BookManagementTest extends TestCase
         // when
         // bandome issaugoti duomenis
         $updatedBookData = ['isbn' => 9780840700551, 'title' => 'Anything' ];
+        // updatiname duomenis, put - updatina replaisindamas
         $response = $this->put('/books/' . $updatedBookData['isbn'], $updatedBookData);
 
         // then
@@ -71,4 +72,23 @@ class BookManagementTest extends TestCase
         $this->assertEquals($updatedBookData['isbn'], Book::first()->isbn);
         $this->assertEquals($updatedBookData['title'], Book::first()->title);
     }
+
+        /** 
+         * @test
+         * @return void
+         */
+        public function book_can_be_deleted() {
+            // given
+            $this->withoutExceptionHandling();
+            $bookData = ['isbn' => 9780840700551, 'title' => 'Holy Bible' ];
+            $this->post('/books', $bookData);
+    
+            // when
+            $this->assertCount(1, Book::all()); // optional, we have already proved that this works above
+            $response = $this->delete('/books/' . $bookData['isbn']);
+    
+            // then
+            $response->assertStatus(200);
+            $this->assertCount(0, Book::all());
+        }
 }
